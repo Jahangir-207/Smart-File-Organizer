@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart File Organizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Animated Ads Banner -->
+    <div class="ads-banner">
+        <div class="ads-content">
+            <span class="ads-text">🚀 Organize Your Files Faster Than Ever!</span>
+            <span class="ads-text">⚡ Save Time With Smart Organization</span>
+            <span class="ads-text">✨ Keep Your Folders Clean & Organized</span>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <!-- Floating Articles Carousel -->
+        <div class="articles-section">
+            <div class="article-card article-1">
+                <div class="article-icon">📁</div>
+                <h3>Auto-Organize</h3>
+                <p>Automatically sort files by type</p>
+            </div>
+            <div class="article-card article-2">
+                <div class="article-icon">⚙️</div>
+                <h3>Smart System</h3>
+                <p>Intelligent file classification</p>
+            </div>
+            <div class="article-card article-3">
+                <div class="article-icon">🎯</div>
+                <h3>One Click</h3>
+                <p>Organize in seconds</p>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="container">
+            <div class="header-content">
+                <h1 class="title-animated">📂 Smart File Organizer</h1>
+                <p class="subtitle">Enter the absolute path of the folder you want to organize.</p>
+            </div>
+            
+            <form id="organize-form" action="/organize" method="POST">
+                <div class="input-wrapper">
+                    <input type="text" name="directory_path" placeholder="e.g., C:/Users/Name/Downloads" required>
+                    <button type="submit" class="btn-submit">
+                        <span class="btn-text">Organize Now</span>
+                        <span class="btn-loader"></span>
+                    </button>
+                </div>
+            </form>
+            
+            <div id="result-message" class="result-message"></div>
+
+            <!-- Features Grid -->
+            <div class="features-grid">
+                <div class="feature-item">
+                    <span class="feature-icon">✓</span>
+                    <span class="feature-text">Fast Processing</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✓</span>
+                    <span class="feature-text">Safe & Secure</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✓</span>
+                    <span class="feature-text">Easy to Use</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Particles -->
+        <div class="particle" style="--x: 10%; --y: 20%;"></div>
+        <div class="particle" style="--x: 80%; --y: 60%;"></div>
+        <div class="particle" style="--x: 50%; --y: 80%;"></div>
+        <div class="particle" style="--x: 15%; --y: 70%;"></div>
+        <div class="particle" style="--x: 85%; --y: 15%;"></div>
+    </div>
+
+    <script>
+        document.getElementById('organize-form').onsubmit = async function(e) {
+            e.preventDefault();
+            const resultDiv = document.getElementById('result-message');
+            const button = document.querySelector('.btn-submit');
+            
+            resultDiv.innerText = "Organizing...";
+            resultDiv.className = "result-message processing";
+            button.disabled = true;
+            button.classList.add('loading');
+
+            const formData = new FormData(this);
+            try {
+                const response = await fetch('/organize', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                resultDiv.innerText = result.message;
+                resultDiv.className = result.status === 'success' ? 'result-message success' : 'result-message error';
+                
+                // Celebration animation on success
+                if (result.status === 'success') {
+                    createConfetti();
+                }
+            } catch(err) {
+                resultDiv.innerText = "An error occurred.";
+                resultDiv.className = "result-message error";
+            } finally {
+                button.disabled = false;
+                button.classList.remove('loading');
+            }
+        };
+
+        // Confetti animation on success
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.delay = Math.random() * 0.5 + 's';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        // Rotate ads text
+        let adIndex = 0;
+        setInterval(() => {
+            const texts = document.querySelectorAll('.ads-text');
+            texts.forEach(text => text.classList.remove('active'));
+            adIndex = (adIndex + 1) % texts.length;
+            texts[adIndex].classList.add('active');
+        }, 4000);
+    </script>
+</body>
+</html>
